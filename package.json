@@ -1,0 +1,22 @@
+{
+  "name": "ebird-alerts",
+  "version": "1.0.0",
+  "description": "Find target birds from eBird based on recent sightings",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ebird",
+    "birding",
+    "alerts"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.1"
+  }
+}
