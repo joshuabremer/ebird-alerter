@@ -1,19 +1,21 @@
 # eBird Target Birds Finder
 
-Find target birds from eBird based on recent sightings in your area. This tool helps you identify birds you haven't seen yet that have been consistently reported by multiple observers.
+Find birds you need to see in your region using eBird. This tool logs into your eBird account, gets your life list, and compares it against the "Needs" list for your region to show you birds you haven't seen yet.
 
 ## Features
 
-- ✅ Uses official eBird API (no scraping needed!)
-- 🎯 Filters birds by consecutive days seen and number of observers
-- 📍 Searches within a configurable radius of your location
-- 🐦 Optionally filters out birds already on your eBird life list
-- ⚙️ Fully configurable thresholds
+- � Automatically logs into your eBird account
+- 📚 Fetches your complete life list
+- 🎯 Checks "Needs [Region]" birds
+- 🐦 Shows birds you haven't seen yet with detailed statistics
+- 📊 Ranks birds by likelihood (based on observer counts, recent sightings, and photos)
+- 📘 Written in TypeScript for type safety
 
 ## Prerequisites
 
 - Node.js (v18 or higher recommended)
-- An eBird API key ([get one here](https://ebird.org/api/keygen))
+- An eBird account with username/password
+- Google Chrome or Chromium browser installed
 
 ## Setup
 
@@ -25,160 +27,116 @@ Find target birds from eBird based on recent sightings in your area. This tool h
 
 2. **Configure your settings:**
 
-   Copy the example environment file:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Edit `.env` and add your details:
+   Create a `.env` file in the project root:
 
    ```env
-   # Get your API key at https://ebird.org/api/keygen
-   EBIRD_API_KEY=your_actual_api_key
-
-   # Your coordinates (find them at https://www.latlong.net/)
-   LATITUDE=40.7128
-   LONGITUDE=-74.0060
-
-   # Search radius in kilometers (max 50)
-   RADIUS_KM=25
-
-   # Minimum consecutive days a bird must be seen
-   MIN_CONSECUTIVE_DAYS=2
-
-   # Minimum number of different observers
-   MIN_OBSERVERS=5
-
-   # How many days back to search
-   DAYS_BACK=14
+   # eBird login credentials
+   EBIRD_USERNAME=your_email@example.com
+   EBIRD_PASSWORD=your_password
    ```
-
-3. **Optional: Add your eBird username**
-
-   To filter out birds you've already seen, add to `.env`:
-
-   ```env
-   EBIRD_USERNAME=your_ebird_username
-   ```
-
-   Or pass it as a command line argument when running.
 
 ## Usage
 
-**Basic usage (no life list filtering):**
+**Run the application:**
 
 ```bash
 npm start
 ```
 
-**With your eBird username (to exclude birds you've seen):**
+The app will:
+
+1. Open a browser and log into eBird with your credentials
+2. Fetch your life list from your profile
+3. Get the "Needs" list for your region
+4. Compare the two lists and display missing birds ranked by likelihood
+
+**For development (with tsx, no build needed):**
 
 ```bash
-npm start your_ebird_username
+npm run dev
 ```
 
-Or:
+**Build TypeScript to JavaScript:**
 
 ```bash
-node index.js your_ebird_username
+npm run build
 ```
 
-## Configuration Options
+**Watch TypeScript files for changes:**
 
-All configurable options are in the `.env` file:
+```bash
+npm run watch
+```
 
-| Variable               | Description               | Default  | Notes                                              |
-| ---------------------- | ------------------------- | -------- | -------------------------------------------------- |
-| `EBIRD_API_KEY`        | Your eBird API key        | Required | Get from [eBird API](https://ebird.org/api/keygen) |
-| `LATITUDE`             | Your latitude             | Required | Decimal degrees                                    |
-| `LONGITUDE`            | Your longitude            | Required | Decimal degrees                                    |
-| `RADIUS_KM`            | Search radius             | 25       | Max 50 km                                          |
-| `MIN_CONSECUTIVE_DAYS` | Minimum consecutive days  | 2        | Birds must be seen this many days in a row         |
-| `MIN_OBSERVERS`        | Minimum observers         | 5        | Birds must be seen by at least this many people    |
-| `DAYS_BACK`            | Days of history to search | 14       | How far back to look                               |
-| `EBIRD_USERNAME`       | Your eBird username       | Optional | For life list filtering                            |
+## Project Structure
+
+```
+ebird-alerts/
+├── src/                    # TypeScript source files
+│   ├── index.ts            # Main entry point
+│   ├── ebird-scraper.ts    # eBird web scraping logic
+│   └── config.ts           # Configuration management
+├── dist/                   # Compiled JavaScript (generated)
+├── .env                    # Your configuration (create this file)
+├── .gitignore              # Git ignore rules
+├── tsconfig.json           # TypeScript configuration
+├── package.json            # Project metadata and dependencies
+└── README.md               # This file
+```
+
+## Configuration
+
+Create a `.env` file with the following variables:
+
+| Variable         | Description               | Required |
+| ---------------- | ------------------------- | -------- |
+| `EBIRD_USERNAME` | Your eBird email/username | Yes      |
+| `EBIRD_PASSWORD` | Your eBird password       | Yes      |
 
 ## Example Output
 
 ```
-🔍 Searching for target birds...
-📍 Location: 40.7128, -74.0060 (25km radius)
-⚙️  Criteria: 2+ consecutive days, 5+ observers
+🦅 eBird Target Birds Finder
 
-Fetching recent observations...
-Found 1247 total observations
+1. Snowy Owl                   [92] ✓
+   └─ 18 observation(s) | 3 day(s) | 5 location(s) | 12 observer(s) | 8 picture(s)
+   └─ Last seen: 2026-01-15
 
-Fetching life list for birder123...
-Life list contains 342 species
-
-✅ Found 3 target bird(s):
-
-════════════════════════════════════════════════════════════════════════════════
-
-1. Snowy Owl (Bubo scandiacus)
-   Species Code: snoowl1
-   👥 Observers: 12
-   📊 Total Sightings: 18
-   📅 Dates Seen: 2026-01-09, 2026-01-10, 2026-01-11
-   📍 Locations (sample):
-      • Central Park
-      • Jamaica Bay Wildlife Refuge
-      • Floyd Bennett Field
-      ... and 2 more location(s)
-
-2. Red Crossbill (Loxia curvirostra)
-   Species Code: redcro
-   👥 Observers: 8
-   📊 Total Sightings: 15
-   📅 Dates Seen: 2026-01-08, 2026-01-09, 2026-01-10
-   📍 Locations (sample):
-      • Prospect Park
-      • Green-Wood Cemetery
-      • Forest Park
+2. Red Crossbill               [87] ✓
+   └─ 15 observation(s) | 3 day(s) | 3 location(s) | 8 observer(s) | 5 picture(s)
+   └─ Last seen: 2026-01-14
 
 ════════════════════════════════════════════════════════════════════════════════
 ```
 
 ## How It Works
 
-1. **Fetches recent observations** from eBird within your specified radius
-2. **Groups observations by species** and analyzes patterns
-3. **Filters birds** that meet your criteria:
-   - Seen on consecutive days (configurable)
-   - Seen by minimum number of observers (configurable)
-   - Not on your life list (if username provided)
-4. **Displays results** sorted by number of observers
+The tool uses Puppeteer to:
 
-## API Limits
-
-The eBird API has rate limits. For normal use, you shouldn't hit them, but be aware:
-
-- Don't run this continuously in a loop
-- The API is free for reasonable personal use
+1. **Log into eBird** with your provided credentials
+2. **Scrape your life list** from your eBird profile
+3. **Fetch the "Needs" list** for your region
+4. **Compare the lists** to find birds you haven't seen yet
+5. **Rank results** by:
+   - Number of observers (more observers = higher likelihood)
+   - Recent sightings (birds seen recently rank higher)
+   - Available photos (documented sightings are more reliable)
 
 ## Troubleshooting
 
-**"Configuration errors: EBIRD_API_KEY is required"**
+**"Configuration errors: EBIRD_USERNAME is required"**
 
-- Make sure you've created a `.env` file and added your API key
+- Make sure you've created a `.env` file with your eBird credentials
 
-**"eBird API error: 403"**
+**Login fails or browser doesn't open**
 
-- Your API key is invalid or not provided correctly
-- Get a new key at https://ebird.org/api/keygen
+- Make sure you have Google Chrome or Chromium installed
+- Check that your eBird credentials are correct
+- The browser window should open automatically during login
 
-**"User not found or life list not public"**
+**"You've seen all the birds in your needs list!"**
 
-- The eBird username might be wrong
-- Or the user's life list is set to private in their eBird settings
-- The tool will continue without life list filtering
-
-**No target birds found**
-
-- Try reducing `MIN_CONSECUTIVE_DAYS` or `MIN_OBSERVERS`
-- Increase `RADIUS_KM` or `DAYS_BACK`
-- Make sure there's been recent birding activity in your area
+- Congratulations! You've achieved your birding goal for your region.
 
 ## Contributing
 

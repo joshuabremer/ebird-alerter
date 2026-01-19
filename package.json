@@ -2,10 +2,13 @@
   "name": "ebird-alerts",
   "version": "1.0.0",
   "description": "Find target birds from eBird based on recent sightings",
-  "main": "index.js",
+  "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "start": "node index.js",
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "watch": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,7 +19,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "node-fetch": "^3.3.2",
+    "puppeteer": "^22.0.0",
     "dotenv": "^16.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0"
   }
 }
