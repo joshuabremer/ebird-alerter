@@ -15,10 +15,14 @@ async function main() {
 
     console.log("🦅 eBird Target Birds Finder\n");
 
+    // Define location codes to check
+    const locationCodes = ["US-SC-035", "US-SC-015", "US-SC-019", "US-SC-029"];
+    console.log(`📍 Checking locations: ${locationCodes.join(", ")}\n`);
+
     // Login and get data
     const page = await loginToEBird();
     const lifeList = await getLifeList(page);
-    const observations = await getNeedsBirds(page);
+    const observations = await getNeedsBirds(page, locationCodes);
 
     // Rank by likelihood
     const rankedBirds = findMissingBirds(lifeList, observations);
@@ -40,6 +44,12 @@ async function main() {
           `   └─ ${bird.totalObservations} observation(s) | ${bird.uniqueDays} day(s) | ${bird.uniqueLocations} location(s) | ${bird.uniqueObservers} observer(s) | ${bird.observationsWithPictures} picture(s)`,
         );
         console.log(`   └─ Last seen: ${bird.recentDate}`);
+
+        // Add links to each needs page
+        const links = bird.locationCodes
+          .map((code) => `https://ebird.org/alert/needs/${code}`)
+          .join(" | ");
+        console.log(`   └─ 🔗 ${links}`);
         console.log();
       });
     }
